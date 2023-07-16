@@ -20,12 +20,7 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kenchedda/OWASP-CICD.git'
             }
         }
-        
-        stage('Code Compile') {
-            steps {
-                    sh "mvn compile"
-            }
-        }
+       
         
         stage('Run Test Cases') {
             steps {
@@ -42,6 +37,32 @@ pipeline {
     
                 }
             }
+
+            stage('OWASP Dependency Check') {
+            steps {
+                   dependencyCheck additionalArguments: '--scan ./   ', odcInstallation: 'DP'
+                   dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        
+        stage('Maven Build') {
+            steps {
+                    sh "mvn clean package"
+            }
+        }
+        
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'D', toolName: 'docker') {
+                            sh "docker build -t webapp ."
+                            sh "docker tag webapp dheeman29/webapp:latest"
+                            sh "docker push dheeman29/webapp:latest "
+ 
+                   }
+                }   
+            }
+        }
         }
         
     }
