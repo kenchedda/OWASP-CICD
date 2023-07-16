@@ -20,7 +20,17 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kenchedda/OWASP-CICD.git'
             }
         }
-     
+       stage('Code Compile') {
+            steps {
+                    sh "mvn compile"
+            }
+        }
+        
+        stage('Run Test Cases') {
+            steps {
+                    sh "mvn test"
+            }
+        }
         
         stage('Sonarqube Analysis') {
             steps {
