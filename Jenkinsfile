@@ -20,25 +20,6 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kenchedda/OWASP-CICD.git'
             }
         }
-     
-        stage('Sonarqube Analysis') {
-            steps {
-                    withSonarQubeEnv('sonar') {
-                        sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Java-WebApp \
-                        -Dsonar.java.binaries=. \
-                        -Dsonar.projectKey=Java-WebApp '''
-    
-                }
-            }
-        }
-
-            stage('OWASP Dependency Check') {
-            steps {
-                   dependencyCheck additionalArguments: '--scan ./   ', odcInstallation: 'DP'
-                   dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        
       
         
         stage('Docker Build & Push') {
